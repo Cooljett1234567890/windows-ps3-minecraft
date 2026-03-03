@@ -7,10 +7,19 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-2019
 
     steps:
     - uses: actions/checkout@v4
+
+    - name: Install VS2012 (v110) build tools
+      shell: powershell
+      run: |
+        choco install visualstudio2019buildtools --package-parameters "--add Microsoft.VisualStudio.Component.VC.v141.x86.x64" -y
+        & "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe" modify `
+          --installPath "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools" `
+          --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
+          --quiet --norestart
 
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v2
