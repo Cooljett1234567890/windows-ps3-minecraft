@@ -12,6 +12,16 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Install v110 build tools
+      shell: powershell
+      run: |
+        $url = "https://aka.ms/vs/16/release/vs_buildtools.exe"
+        Invoke-WebRequest -Uri $url -OutFile vs_buildtools.exe
+        Start-Process -FilePath .\vs_buildtools.exe -ArgumentList `
+          "--quiet", "--norestart", "--nocache", `
+          "--add", "Microsoft.VisualStudio.Component.VC.v141.x86.x64" `
+          -Wait
+
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v2
 
