@@ -12,20 +12,22 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Install VS2012 (v110) build tools
+    - name: Install v110 (VS2012) toolset
       shell: powershell
       run: |
-        choco install visualstudio2019buildtools --package-parameters "--add Microsoft.VisualStudio.Component.VC.v141.x86.x64" -y
-        & "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe" modify `
-          --installPath "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools" `
-          --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
-          --quiet --norestart
+        $installer = "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe"
+        & $installer modify --installPath "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools" `
+          --add Microsoft.VisualStudio.Component.VC.v141.x86.x64 `
+          --quiet --norestart | Out-Null
+        choco install visualstudio2012-vc110redist -y 2>$null || true
 
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v2
+      with:
+        vs-version: '[16.0,17.0)'
 
     - name: Build solution
-      run: msbuild MinecraftConsoles.sln /p:Configuration=Debug /p:Platform=Windows64
+      run: msbuild MinecraftConsoles.sln /p:Configuration=Debug /p:Platform=Windows64 /p:PlatformToolset=v110
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
